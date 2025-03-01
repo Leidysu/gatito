@@ -1,0 +1,150 @@
+import pickle
+
+# Clase Producto
+class Producto:
+    def __init__(self, id_producto, nombre, cantidad, precio):
+        self.id_producto = id_producto
+        self.nombre = nombre
+        self.cantidad = cantidad
+        self.precio = precio
+
+    def __str__(self):
+        return f"ID: {self.id_producto} | Nombre: {self.nombre} | Cantidad: {self.cantidad} | Precio: ${self.precio:.2f}"
+
+# Clase Inventario
+class Inventario:
+    def __init__(self):
+        self.productos = {}
+
+    def añadir_producto(self, producto):
+        if producto.id_producto not in self.productos:
+            self.productos[producto.id_producto] = producto
+            print(f"Producto {producto.nombre} añadido al inventario.")
+        else:
+            print(f"El producto con ID {producto.id_producto} ya existe.")
+
+    def eliminar_producto(self, id_producto):
+        if id_producto in self.productos:
+            del self.productos[id_producto]
+            print(f"Producto con ID {id_producto} eliminado.")
+        else:
+            print(f"No se encontró un producto con ID {id_producto}.")
+
+    def actualizar_producto(self, id_producto, cantidad=None, precio=None):
+        if id_producto in self.productos:
+            producto = self.productos[id_producto]
+            if cantidad is not None:
+                producto.cantidad = cantidad
+            if precio is not None:
+                producto.precio = precio
+            print(f"Producto con ID {id_producto} actualizado.")
+        else:
+            print(f"No se encontró un producto con ID {id_producto}.")
+
+    def buscar_producto(self, nombre):
+        productos_encontrados = [prod for prod in self.productos.values() if nombre.lower() in prod.nombre.lower()]
+        if productos_encontrados:
+            for prod in productos_encontrados:
+                print(prod)
+        else:
+            print(f"No se encontró ningún producto con el nombre {nombre}.")
+
+    def mostrar_inventario(self):
+        if self.productos:
+            for producto in self.productos.values():
+                print(producto)
+        else:
+            print("El inventario está vacío.")
+
+    def guardar_inventario(self, filename):
+        with open(filename, 'wb') as file:
+            pickle.dump(self.productos, file)
+        print(f"Inventario guardado en {filename}.")
+
+    def cargar_inventario(self, filename):
+        try:
+            with open(filename, 'rb') as file:
+                self.productos = pickle.load(file)
+            print(f"Inventario cargado desde {filename}.")
+        except FileNotFoundError:
+            print(f"No se encontró el archivo {filename}.")
+
+# Productos típicos de tiendas ecuatorianas
+productos_ecuador = [
+    Producto("1", "Doritos", 50, 1.00),
+    Producto("2", "Papas Margarita", 40, 0.75),
+    Producto("3", "Chitos", 60, 0.80),
+    Producto("4", "Yogur Toni", 30, 1.50),
+    Producto("5", "Conflex Nestlé", 25, 1.20),
+    Producto("6", "Galletas Oreo", 50, 1.00),
+    Producto("7", "Galletas Amor", 40, 1.50),
+    Producto("8", "Cola Pepsi 500ml", 30, 0.90),
+    Producto("9", "Cola Coca-Cola 500ml", 30, 1.00),
+    Producto("10", "Leche Vita 1L", 20, 1.60),
+    Producto("11", "Atún Real en Aceite", 15, 2.00),
+    Producto("12", "Arroz Súper Extra 1kg", 20, 1.50)
+]
+
+# Interfaz de usuario
+def menu():
+    inventario = Inventario()
+    archivo = "inventario.dat"
+
+    # Añadir productos iniciales
+    for producto in productos_ecuador:
+        inventario.añadir_producto(producto)
+
+    while True:
+        print("\nSistema de Gestión de Inventarios")
+        print("1. Añadir Producto")
+        print("2. Eliminar Producto")
+        print("3. Actualizar Producto")
+        print("4. Buscar Producto")
+        print("5. Mostrar Inventario")
+        print("6. Guardar Inventario")
+        print("7. Cargar Inventario")
+        print("8. Salir")
+        opcion = input("Selecciona una opción: ")
+
+        if opcion == "1":
+            id_producto = input("ID Producto: ")
+            nombre = input("Nombre del Producto: ")
+            cantidad = int(input("Cantidad: "))
+            precio = float(input("Precio: "))
+            producto = Producto(id_producto, nombre, cantidad, precio)
+            inventario.añadir_producto(producto)
+
+        elif opcion == "2":
+            id_producto = input("ID del Producto a eliminar: ")
+            inventario.eliminar_producto(id_producto)
+
+        elif opcion == "3":
+            id_producto = input("ID del Producto a actualizar: ")
+            cantidad = input("Nueva cantidad (deja en blanco para no cambiar): ")
+            precio = input("Nuevo precio (deja en blanco para no cambiar): ")
+            cantidad = int(cantidad) if cantidad else None
+            precio = float(precio) if precio else None
+            inventario.actualizar_producto(id_producto, cantidad, precio)
+
+        elif opcion == "4":
+            nombre = input("Nombre del Producto a buscar: ")
+            inventario.buscar_producto(nombre)
+
+        elif opcion == "5":
+            inventario.mostrar_inventario()
+
+        elif opcion == "6":
+            inventario.guardar_inventario(archivo)
+
+        elif opcion == "7":
+            inventario.cargar_inventario(archivo)
+
+        elif opcion == "8":
+            print("Saliendo...")
+            break
+
+        else:
+            print("Opción no válida. Intenta nuevamente.")
+
+# Ejecutar el menú
+menu()
