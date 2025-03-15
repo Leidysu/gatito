@@ -1,0 +1,42 @@
+import tkinter as tk
+from tkinter import filedialog, messagebox
+
+# Función para abrir un archivo y cargar su contenido
+def abrir_archivo():
+    archivo = filedialog.askopenfilename(defaultextension=".txt", filetypes=[("Archivos de texto", "*.txt"), ("Todos los archivos", "*.*")])
+    if archivo:
+        with open(archivo, 'r') as f:
+            texto = f.read()
+            text_area.delete(1.0, tk.END)  # Limpiar el área de texto antes de cargar el nuevo archivo
+            text_area.insert(tk.END, texto)  # Insertar el texto del archivo
+
+# Función para guardar el contenido en un archivo
+def guardar_archivo():
+    archivo = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Archivos de texto", "*.txt"), ("Todos los archivos", "*.*")])
+    if archivo:
+        with open(archivo, 'w') as f:
+            texto = text_area.get(1.0, tk.END)  # Obtener el contenido del área de texto
+            f.write(texto)  # Guardar el texto en el archivo
+
+# Crear la ventana principal
+root = tk.Tk()
+root.title("Editor de Texto Básico")
+
+# Crear un área de texto donde el usuario puede escribir
+text_area = tk.Text(root, wrap=tk.WORD, width=50, height=20)
+text_area.pack(padx=10, pady=10)
+
+# Crear una barra de menú con opciones
+menu_bar = tk.Menu(root)
+
+# Menú de archivo
+file_menu = tk.Menu(menu_bar, tearoff=0)
+file_menu.add_command(label="Abrir", command=abrir_archivo)
+file_menu.add_command(label="Guardar", command=guardar_archivo)
+menu_bar.add_cascade(label="Archivo", menu=file_menu)
+
+# Configurar la barra de menú en la ventana
+root.config(menu=menu_bar)
+
+# Ejecutar la aplicación
+root.mainloop()
