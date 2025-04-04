@@ -1,0 +1,68 @@
+import tkinter as tk
+from tkinter import messagebox
+
+# Funciones para agregar, eliminar y marcar tareas como completadas
+def agregar_tarea():
+    tarea = entrada_tarea.get()
+    if tarea != "":
+        lista_tareas.insert(tk.END, tarea)
+        entrada_tarea.delete(0, tk.END)
+
+def eliminar_tarea():
+    try:
+        tarea_seleccionada = lista_tareas.curselection()
+        lista_tareas.delete(tarea_seleccionada)
+    except IndexError:
+        messagebox.showwarning("Advertencia", "Selecciona una tarea para eliminar")
+
+def completar_tarea():
+    try:
+        tarea_seleccionada = lista_tareas.curselection()
+        tarea = lista_tareas.get(tarea_seleccionada)
+        lista_tareas.delete(tarea_seleccionada)
+        lista_tareas.insert(tk.END, tarea + " (Completada)")
+    except IndexError:
+        messagebox.showwarning("Advertencia", "Selecciona una tarea para marcar como completada")
+
+# Función para manejar los atajos de teclado
+def atajos_teclado(event):
+    if event.keysym == "Return":
+        agregar_tarea()
+    elif event.keysym == "c":
+        completar_tarea()
+    elif event.keysym == "Delete" or event.keysym == "d":
+        eliminar_tarea()
+    elif event.keysym == "Escape":
+        root.quit()
+
+# Crear la ventana principal
+root = tk.Tk()
+root.title("Gestión de Tareas")
+
+# Campo de entrada para nueva tarea
+entrada_tarea = tk.Entry(root, width=40)
+entrada_tarea.pack(pady=10)
+
+# Botones para agregar, completar y eliminar tareas
+btn_agregar = tk.Button(root, text="Agregar tarea", command=agregar_tarea)
+btn_agregar.pack(pady=5)
+
+btn_completar = tk.Button(root, text="Marcar como completada", command=completar_tarea)
+btn_completar.pack(pady=5)
+
+btn_eliminar = tk.Button(root, text="Eliminar tarea", command=eliminar_tarea)
+btn_eliminar.pack(pady=5)
+
+# Lista para mostrar las tareas
+lista_tareas = tk.Listbox(root, width=40, height=10)
+lista_tareas.pack(pady=10)
+
+# Bind para atajos de teclado
+root.bind("<Return>", atajos_teclado)   # Enter para agregar tarea
+root.bind("<c>", atajos_teclado)         # 'C' para marcar como completada
+root.bind("<Delete>", atajos_teclado)    # 'Delete' para eliminar tarea
+root.bind("<d>", atajos_teclado)         # 'D' para eliminar tarea
+root.bind("<Escape>", atajos_teclado)    # Escape para cerrar la aplicación
+
+# Ejecutar la aplicación
+root.mainloop()
